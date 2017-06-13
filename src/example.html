@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Excel Bootstrap Table Filter</title>
+</head>
+
+<body>
+  <!-- Load jQuery -->
+  <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+  <!-- Load the plugin bundle. -->
+  <script src="excel-bootstrap-table-filter-bundle.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="excel-bootstrap-table-filter-style.css" />
+
+
+  <section class="alternate page-heading">
+    <div class="container">
+      <header>
+        <h1>Excel-style Bootstrap Table filter jQuery plugin</h1>
+      </header>
+      <p class="lead"></p>
+  </section>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <table id="table" class="table table-bordered table-intel">
+        <thead>
+          <tr>
+            <th>Animal</th>
+            <th>Class</th>
+            <th>Collective Noun</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Bear</td>
+            <td>Mammal</td>
+            <td>Sleuth</td>
+          </tr>
+          <tr>
+            <td>Ant</td>
+            <td>Insect</td>
+            <td>Army</td>
+          </tr>
+          <tr>
+            <td>Salamander</td>
+            <td>Amphibian</td>
+            <td>Congress</td>
+          </tr>
+          <tr>
+            <td>Owl</td>
+            <td>Bird</td>
+            <td>Parliament</td>
+          </tr>
+          <tr>
+            <td>Frog</td>
+            <td>Amphibian</td>
+            <td>Army</td>
+          </tr>
+          <tr>
+            <td>Shark</td>
+            <td>Fish</td>
+            <td>Gam</td>
+          </tr>
+          <tr>
+            <td>Kookaburra</td>
+            <td>Bird</td>
+            <td>Cackle</td>
+          </tr>
+          <tr>
+            <td>Crow</td>
+            <td>Bird</td>
+            <td>Murder</td>
+          </tr>
+          <tr>
+            <td>Elephant</td>
+            <td>Mammal</td>
+            <td>Herd</td>
+          </tr>
+          <tr>
+            <td>Barracude</td>
+            <td>Fish</td>
+            <td>Grist</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+  
+
+  <script>
+    // Use the plugin once the DOM has been loaded.
+    $(function () {
+      // Apply the plugin 
+      $('#table').excelTableFilter();
+    });
+  </script>
+</body>
+
+</html>
+

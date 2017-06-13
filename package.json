@@ -1,0 +1,44 @@
+{
+  "name": "excel-bootstrap-table-filter",
+  "version": "1.0.0",
+  "description": "jQuery plugin to generate a checkbox drop-down table-filter",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chetsercharles/excel-bootstrap-table-filter"
+  },
+  "scripts": {
+    "clean": "rimraf dist && rimraf coverage",
+    "build": "npm run compile && npm run copy:html && npm run bundle && npm run minify",
+    "compile": "tsc",
+    "copy:html": "cpx src/**.{html,css} dist",
+    "test": "karma start",
+    "bundle": "rollup -c",
+    "minify": "uglifyjs dist/excel-bootstrap-table-filter-bundle.js --output dist/excel-bootstrap-table-filter-bundle.min.js --source-map dist/excel-bootstrap-table-filter-bundle.min.js.map --source-map-url excel-bootstrap-table-filter-bundle.min.js.map --in-source-map dist/excel-bootstrap-table-filter-bundle.js.map"
+  },
+  "author": {
+    "name": "Chester Carmer",
+    "email": "chestercarmer@icloud.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "~3.1.1"
+  },
+  "devDependencies": {
+    "@types/jasmine": "~2.5.43",
+    "@types/jquery": "~2.0.40",
+    "babel-plugin-external-helpers": "~6.22.0",
+    "babel-preset-es2015": "~6.22.0",
+    "cpx": "~1.5.0",
+    "jasmine-core": "~2.5.2",
+    "karma": "~1.5.0",
+    "karma-jasmine": "~1.1.0",
+    "karma-phantomjs-launcher": "~1.0.2",
+    "karma-typescript": "~2.1.7",
+    "rimraf": "~2.6.1",
+    "rollup": "~0.41.4",
+    "rollup-plugin-babel": "~2.7.1",
+    "rollup-plugin-sourcemaps": "~0.4.1",
+    "typescript": "~2.1.6",
+    "uglify-js": "~2.7.5"
+  }
+}
