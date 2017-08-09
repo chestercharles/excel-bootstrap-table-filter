@@ -11,9 +11,13 @@ image::excel-table-filter-example.PNG[Calendar, 900, 450, link="https://github.c
 . Install the dependencies by running: `npm install`.
 . Build the project by running: `npm run build`.
 . Add `dist/checkbox-dropdown-plugin.min.js` and `dist/checkbox-dropdown-style.css` to you project
-. Render the dropdown to a `#table` and pass a callback function:
+. Render the dropdown to a `#table` and pass an (optional) configuration object:
 
-    $('#table').excelTableFilter();
+    $('#table').excelTableFilter({
+        columnSelector: '.apply-filter',    // (optional) if present, will only select <th> with specified class
+        sort: true,                         // (optional) default true
+        search: true                        // (optional) default true
+    });
 
 == Support
 
