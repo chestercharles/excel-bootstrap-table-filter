@@ -13,7 +13,7 @@ image::excel-table-filter-example.PNG[Calendar, 900, 450, link="https://github.c
 . Add `dist/checkbox-dropdown-plugin.min.js` and `dist/checkbox-dropdown-style.css` to you project
 . Render the dropdown to a `#table` and pass a callback function:
 
-    $('#table').excelTableFilter();;
+    $('#table').excelTableFilter();
 
 == Support
 
