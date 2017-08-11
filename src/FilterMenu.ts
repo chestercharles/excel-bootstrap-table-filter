@@ -2,21 +2,23 @@ export class FilterMenu {
 
   th:                 HTMLElement;
   tds:                Array<HTMLElement>;
-  menuItems:          Array<MenuItem>;
   column:             number;
+  index:              number;
   menu:               HTMLElement;
   inputs:             Array<Element>;
   selectAllCheckbox:  Element;
   searchFilter:       Element;
+  options:            Options;
 
-  constructor (th: HTMLElement, col: number) {
+  constructor (th: HTMLElement, column: number, index: number, options: Options) {
+    this.options = options;
     this.th = th;
-    this.column = col;
+    this.column = column;
+    this.index = index;
     this.tds = $('table tbody tr td:nth-child(' + (this.column + 1) + ')').toArray();
   }
 
   public initialize(): void {
-    this.menuItems = this.retrieveMenuItems();
     this.menu = this.dropdownFilterDropdown();
     this.th.appendChild(this.menu);
 
@@ -36,86 +38,50 @@ export class FilterMenu {
     });
   }
 
-  public isSelected(value: string): boolean {
-    return this.menuItems.filter(function(item: MenuItem) {
-      return item.selected;
-    }).map(function(item: MenuItem) {
-      return item.value;
-    }).indexOf(value) > -1;
-  }
-
   public searchToggle(value: string): void {
-    if (value.length > 0) {
-      // deselect All
-      this.toggleAll(false, false);
-      if (this.selectAllCheckbox instanceof HTMLInputElement) this.selectAllCheckbox.checked = false;
-
-      this.menuItems.filter(function(item) {
-        return item.value.toLowerCase().indexOf(value.toLowerCase()) > -1;
-      }).forEach(function(item) {
-        item.selected = true;
-      });
-
-      this.inputs.filter(function(input: HTMLInputElement) {
-        return input.value.toLowerCase().indexOf(value.toLowerCase()) > -1;
-      }).forEach(function(input: HTMLInputElement) {
-        input.checked = true;
-      });
-
-    } else {
-      this.toggleAll(true, false);
+    if (this.selectAllCheckbox instanceof HTMLInputElement) this.selectAllCheckbox.checked = false;
+    if (value.length === 0){
+      this.toggleAll(true);
       if (this.selectAllCheckbox instanceof HTMLInputElement) this.selectAllCheckbox.checked = true;
+      return;
     }
+    // deselect all checkboxes initially
+    this.toggleAll(false);
+    // select checkboxes that match the search parameter
+    this.inputs.filter(function(input: HTMLInputElement) {
+      return input.value.toLowerCase().indexOf(value.toLowerCase()) > -1;
+    }).forEach(function(input: HTMLInputElement) {
+      input.checked = true;
+    });
   }
 
 
-  public toggle(value: string): void {
-    // delselect inventory
-    this.menuItems.filter(function(item: MenuItem) {
-      return item.value === value;
-    }).forEach(function(item: MenuItem) {
-      item.selected = !item.selected;
-    });
-
-    let totalItems = this.menuItems.length;
-    let selectedItems = this.menuItems.filter(function(item: MenuItem) {
-      return item.selected;
-    }).length;
-
+  public updateSelectAll(): void {
     if (this.selectAllCheckbox instanceof HTMLInputElement) {
-      this.selectAllCheckbox.checked = (totalItems === selectedItems);
+      // clear search parameters, if any
+      $(this.searchFilter).val('');
+      // Check if all inputs are selected
+      this.selectAllCheckbox.checked = (this.inputs.length === this.inputs.filter(function(input: HTMLInputElement) {
+        return input.checked;
+      }).length);
     }
   }
 
-  public selectAllToggle(value: boolean): void {
-    this.toggleAll(value, true);
+  public selectAllUpdate(checked: boolean): void {
+    // clear search parameters, if any
+    $(this.searchFilter).val('');
+    this.toggleAll(checked);
   }
 
-  private toggleAll(value: boolean, clearSearch: boolean): void {
-    if (clearSearch) $(this.searchFilter).val('');
-    // delselect inventory
-    this.menuItems.forEach(function(item: MenuItem) {
-      item.selected = value;
-    });
-    this.inputs.forEach(function(input: HTMLInputElement) {
-      input.checked = value;
-    });
-  }
-
-  private retrieveMenuItems(): Array<MenuItem> {
-    let inputs = this.inputs;
-    let column = this.column;
-    return this.tds.map(function(el: HTMLElement, row: number) {
-      return {
-        column: column,
-        row: row,
-        value: el.innerHTML,
-        selected: true
-      };
-    });
+  private toggleAll(checked: boolean): void {
+    // loop through all inputs and check or uncheck each
+    for (var i=0; i < this.inputs.length; i++) {
+      let input = this.inputs[i];
+      if (input instanceof HTMLInputElement) input.checked = checked;
+    }
   }
   
-  private dropdownFilterItem(td: HTMLElement): HTMLElement {
+  private dropdownFilterItem(td: HTMLElement, self: any): HTMLElement {
     // build holder div
     let value = td.innerText;
     let dropdownFilterItem = document.createElement('div');
@@ -123,14 +89,15 @@ export class FilterMenu {
     // build input
     let input = document.createElement('input');
     input.type = 'checkbox';
-    input.value = value;
+    input.value = value.trim().replace(/ +(?= )/g,'');
     input.setAttribute('checked','checked');
     input.className = 'dropdown-filter-menu-item item';
     // get index of td element
-    input.setAttribute('data-column', $(td).parent().children().index($(td)).toString());
+    input.setAttribute('data-column', self.column.toString());
+    input.setAttribute('data-index', self.index.toString());
     // append input to holding div
     dropdownFilterItem.appendChild(input);
-    dropdownFilterItem.innerHTML = dropdownFilterItem.innerHTML + ' ' +  value;
+    dropdownFilterItem.innerHTML = dropdownFilterItem.innerHTML.trim() + ' ' +  value;
     return dropdownFilterItem;
   }
 
@@ -146,6 +113,7 @@ export class FilterMenu {
     input.setAttribute('checked','checked');
     input.className = 'dropdown-filter-menu-item select-all';
     input.setAttribute('data-column', this.column.toString());
+    input.setAttribute('data-index', this.index.toString());
     // append input to holding div
     dropdownFilterItemSelectAll.appendChild(input);
     dropdownFilterItemSelectAll.innerHTML = dropdownFilterItemSelectAll.innerHTML + ' ' +  value;
@@ -161,6 +129,7 @@ export class FilterMenu {
     input.type = 'text';
     input.className = 'dropdown-filter-menu-search form-control';
     input.setAttribute('data-column', this.column.toString());
+    input.setAttribute('data-index', this.index.toString());
     input.setAttribute('placeholder', 'search');
     // append input to holding div
     dropdownFilterItem.appendChild(input);
@@ -175,6 +144,7 @@ export class FilterMenu {
     let span = document.createElement('span');
     span.className = direction.toLowerCase().split(' ').join('-');
     span.setAttribute('data-column', this.column.toString());
+    span.setAttribute('data-index', this.index.toString());
     span.innerText = direction;
     // append input to holding div
     dropdownFilterItem.appendChild(span);
@@ -182,44 +152,69 @@ export class FilterMenu {
   }
 
   private dropdownFilterContent(): HTMLElement {
+    let self = this;
     // build holder div
     let dropdownFilterContent = document.createElement('div');
     dropdownFilterContent.className = 'dropdown-filter-content';
 
     let innerDivs = this.tds.reduce(function(arr, el) {
-      let values = arr.map((el) => el.innerText);
-      if (values.indexOf(el.innerText) < 0) arr.push(el);
+      // get unique values in column
+      let values = arr.map((el) => el.innerText.trim());
+      if (values.indexOf(el.innerText.trim()) < 0) arr.push(el);
+      // return unique values
       return arr;
     }, [])
     .sort(function(a, b) {
-      return a.innerText.toLowerCase() > b.innerText.toLowerCase() ? 1 : -1;
-    })
-    .map(this.dropdownFilterItem)
+      // sort values for display in dropdown
+      var A = a.innerText.toLowerCase();
+      var B = b.innerText.toLowerCase();
 
-    // map inputs to instance
+      if (!isNaN(Number(A)) && !isNaN(Number(B))) {
+
+        // handle numbers
+        if(Number(A) < Number(B)) return -1;
+        if(Number(A) > Number(B)) return  1;
+
+      } else {
+
+        // handle strings
+        if(A < B) return -1;
+        if(A > B) return  1;
+
+      }
+      //return a.innerText.toLowerCase() > b.innerText.toLowerCase() ? 1 : -1;
+      return 0;
+    })
+    // create dropdown filter items out of each value
+    .map( (td) => {
+      return this.dropdownFilterItem(td, self);
+    })
+
+    // map inputs to instance, we will need these later
     this.inputs = innerDivs.map((div) => div.firstElementChild);
 
-    // add select all checkbox
+    // add a select all checkbox
     let selectAllCheckboxDiv = this.dropdownFilterItemSelectAll();
+    // map the select all  checkbox to the instance, we will need it later
     this.selectAllCheckbox = selectAllCheckboxDiv.firstElementChild;
+    // the checkbox will precede the other inputs
     innerDivs.unshift(selectAllCheckboxDiv);
 
     let searchFilterDiv = this.dropdownFilterSearch();
     this.searchFilter = searchFilterDiv.firstElementChild;
 
-    // create outer div
+    // create outer div, and place all inner divs within it
     let outerDiv = innerDivs.reduce(function(outerDiv, innerDiv) {
       outerDiv.appendChild(innerDiv);
       return outerDiv;
     }, document.createElement('div'));
     outerDiv.className = 'checkbox-container';
 
-    return [ this.dropdownFilterSort( 'A to Z'), 
-             this.dropdownFilterSort( 'Z to A'),
-             searchFilterDiv
-      ]
-      .concat(outerDiv)
-      .reduce(function(html, el) {
+    let elements: Array<HTMLElement> = [];
+    if (this.options.sort  ) elements= elements.concat([ this.dropdownFilterSort( 'A to Z'),  this.dropdownFilterSort( 'Z to A')]);
+    if (this.options.search) elements.push(searchFilterDiv);
+
+    return elements.concat(outerDiv).reduce(function(html, el) {
         html.appendChild(el);
         return html;
     }, dropdownFilterContent);

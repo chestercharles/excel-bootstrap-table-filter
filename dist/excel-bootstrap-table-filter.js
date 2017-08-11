@@ -3,7 +3,13 @@ import { FilterCollection } from './FilterCollection';
 $.fn.excelTableFilter = function (options) {
     var target = this;
     options = $.extend({}, $.fn.excelTableFilter.options, options);
-    var filterCollection = new FilterCollection(target);
+    if (typeof options.columnSelector === 'undefined')
+        options.columnSelector = '';
+    if (typeof options.sort === 'undefined')
+        options.sort = true;
+    if (typeof options.search === 'undefined')
+        options.search = true;
+    var filterCollection = new FilterCollection(target, options);
     filterCollection.initialize();
     return target;
 };

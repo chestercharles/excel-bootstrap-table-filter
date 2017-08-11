@@ -6,8 +6,12 @@ import { FilterCollection } from './FilterCollection'
   let target = this;
   // Merge the global options with the per-call options.
   options = $.extend({}, ($.fn as any).excelTableFilter.options, options);
+
+  if (typeof options.columnSelector === 'undefined') options.columnSelector = '';
+  if (typeof options.sort === 'undefined') options.sort = true;
+  if (typeof options.search === 'undefined') options.search = true;
   
-  let filterCollection = new FilterCollection(target);
+  let filterCollection = new FilterCollection(target, options);
   filterCollection.initialize();
 
   // Return the jQuery object for chaining.

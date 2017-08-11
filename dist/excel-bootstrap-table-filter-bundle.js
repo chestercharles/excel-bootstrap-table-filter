@@ -4,13 +4,14 @@
 $$1 = 'default' in $$1 ? $$1['default'] : $$1;
 
 var FilterMenu = function () {
-    function FilterMenu(th, col) {
+    function FilterMenu(th, column, index, options) {
+        this.options = options;
         this.th = th;
-        this.column = col;
+        this.column = column;
+        this.index = index;
         this.tds = $('table tbody tr td:nth-child(' + (this.column + 1) + ')').toArray();
     }
     FilterMenu.prototype.initialize = function () {
-        this.menuItems = this.retrieveMenuItems();
         this.menu = this.dropdownFilterDropdown();
         this.th.appendChild(this.menu);
         var $trigger = $(this.menu.children[0]);
@@ -25,82 +26,51 @@ var FilterMenu = function () {
             }
         });
     };
-    FilterMenu.prototype.isSelected = function (value) {
-        return this.menuItems.filter(function (item) {
-            return item.selected;
-        }).map(function (item) {
-            return item.value;
-        }).indexOf(value) > -1;
-    };
     FilterMenu.prototype.searchToggle = function (value) {
-        if (value.length > 0) {
-            this.toggleAll(false, false);
-            if (this.selectAllCheckbox instanceof HTMLInputElement) this.selectAllCheckbox.checked = false;
-            this.menuItems.filter(function (item) {
-                return item.value.toLowerCase().indexOf(value.toLowerCase()) > -1;
-            }).forEach(function (item) {
-                item.selected = true;
-            });
-            this.inputs.filter(function (input) {
-                return input.value.toLowerCase().indexOf(value.toLowerCase()) > -1;
-            }).forEach(function (input) {
-                input.checked = true;
-            });
-        } else {
-            this.toggleAll(true, false);
+        if (this.selectAllCheckbox instanceof HTMLInputElement) this.selectAllCheckbox.checked = false;
+        if (value.length === 0) {
+            this.toggleAll(true);
             if (this.selectAllCheckbox instanceof HTMLInputElement) this.selectAllCheckbox.checked = true;
+            return;
         }
-    };
-    FilterMenu.prototype.toggle = function (value) {
-        this.menuItems.filter(function (item) {
-            return item.value === value;
-        }).forEach(function (item) {
-            item.selected = !item.selected;
+        this.toggleAll(false);
+        this.inputs.filter(function (input) {
+            return input.value.toLowerCase().indexOf(value.toLowerCase()) > -1;
+        }).forEach(function (input) {
+            input.checked = true;
         });
-        var totalItems = this.menuItems.length;
-        var selectedItems = this.menuItems.filter(function (item) {
-            return item.selected;
-        }).length;
+    };
+    FilterMenu.prototype.updateSelectAll = function () {
         if (this.selectAllCheckbox instanceof HTMLInputElement) {
-            this.selectAllCheckbox.checked = totalItems === selectedItems;
+            $(this.searchFilter).val('');
+            this.selectAllCheckbox.checked = this.inputs.length === this.inputs.filter(function (input) {
+                return input.checked;
+            }).length;
         }
     };
-    FilterMenu.prototype.selectAllToggle = function (value) {
-        this.toggleAll(value, true);
+    FilterMenu.prototype.selectAllUpdate = function (checked) {
+        $(this.searchFilter).val('');
+        this.toggleAll(checked);
     };
-    FilterMenu.prototype.toggleAll = function (value, clearSearch) {
-        if (clearSearch) $(this.searchFilter).val('');
-        this.menuItems.forEach(function (item) {
-            item.selected = value;
-        });
-        this.inputs.forEach(function (input) {
-            input.checked = value;
-        });
+    FilterMenu.prototype.toggleAll = function (checked) {
+        for (var i = 0; i < this.inputs.length; i++) {
+            var input = this.inputs[i];
+            if (input instanceof HTMLInputElement) input.checked = checked;
+        }
     };
-    FilterMenu.prototype.retrieveMenuItems = function () {
-        var inputs = this.inputs;
-        var column = this.column;
-        return this.tds.map(function (el, row) {
-            return {
-                column: column,
-                row: row,
-                value: el.innerHTML,
-                selected: true
-            };
-        });
-    };
-    FilterMenu.prototype.dropdownFilterItem = function (td) {
+    FilterMenu.prototype.dropdownFilterItem = function (td, self) {
         var value = td.innerText;
         var dropdownFilterItem = document.createElement('div');
         dropdownFilterItem.className = 'dropdown-filter-item';
         var input = document.createElement('input');
         input.type = 'checkbox';
-        input.value = value;
+        input.value = value.trim().replace(/ +(?= )/g, '');
         input.setAttribute('checked', 'checked');
         input.className = 'dropdown-filter-menu-item item';
-        input.setAttribute('data-column', $(td).parent().children().index($(td)).toString());
+        input.setAttribute('data-column', self.column.toString());
+        input.setAttribute('data-index', self.index.toString());
         dropdownFilterItem.appendChild(input);
-        dropdownFilterItem.innerHTML = dropdownFilterItem.innerHTML + ' ' + value;
+        dropdownFilterItem.innerHTML = dropdownFilterItem.innerHTML.trim() + ' ' + value;
         return dropdownFilterItem;
     };
     FilterMenu.prototype.dropdownFilterItemSelectAll = function () {
@@ -113,6 +83,7 @@ var FilterMenu = function () {
         input.setAttribute('checked', 'checked');
         input.className = 'dropdown-filter-menu-item select-all';
         input.setAttribute('data-column', this.column.toString());
+        input.setAttribute('data-index', this.index.toString());
         dropdownFilterItemSelectAll.appendChild(input);
         dropdownFilterItemSelectAll.innerHTML = dropdownFilterItemSelectAll.innerHTML + ' ' + value;
         return dropdownFilterItemSelectAll;
@@ -124,6 +95,7 @@ var FilterMenu = function () {
         input.type = 'text';
         input.className = 'dropdown-filter-menu-search form-control';
         input.setAttribute('data-column', this.column.toString());
+        input.setAttribute('data-index', this.index.toString());
         input.setAttribute('placeholder', 'search');
         dropdownFilterItem.appendChild(input);
         return dropdownFilterItem;
@@ -134,22 +106,36 @@ var FilterMenu = function () {
         var span = document.createElement('span');
         span.className = direction.toLowerCase().split(' ').join('-');
         span.setAttribute('data-column', this.column.toString());
+        span.setAttribute('data-index', this.index.toString());
         span.innerText = direction;
         dropdownFilterItem.appendChild(span);
         return dropdownFilterItem;
     };
     FilterMenu.prototype.dropdownFilterContent = function () {
+        var _this = this;
+        var self = this;
         var dropdownFilterContent = document.createElement('div');
         dropdownFilterContent.className = 'dropdown-filter-content';
         var innerDivs = this.tds.reduce(function (arr, el) {
             var values = arr.map(function (el) {
-                return el.innerText;
+                return el.innerText.trim();
             });
-            if (values.indexOf(el.innerText) < 0) arr.push(el);
+            if (values.indexOf(el.innerText.trim()) < 0) arr.push(el);
             return arr;
         }, []).sort(function (a, b) {
-            return a.innerText.toLowerCase() > b.innerText.toLowerCase() ? 1 : -1;
-        }).map(this.dropdownFilterItem);
+            var A = a.innerText.toLowerCase();
+            var B = b.innerText.toLowerCase();
+            if (!isNaN(Number(A)) && !isNaN(Number(B))) {
+                if (Number(A) < Number(B)) return -1;
+                if (Number(A) > Number(B)) return 1;
+            } else {
+                if (A < B) return -1;
+                if (A > B) return 1;
+            }
+            return 0;
+        }).map(function (td) {
+            return _this.dropdownFilterItem(td, self);
+        });
         this.inputs = innerDivs.map(function (div) {
             return div.firstElementChild;
         });
@@ -163,7 +149,10 @@ var FilterMenu = function () {
             return outerDiv;
         }, document.createElement('div'));
         outerDiv.className = 'checkbox-container';
-        return [this.dropdownFilterSort('A to Z'), this.dropdownFilterSort('Z to A'), searchFilterDiv].concat(outerDiv).reduce(function (html, el) {
+        var elements = [];
+        if (this.options.sort) elements = elements.concat([this.dropdownFilterSort('A to Z'), this.dropdownFilterSort('Z to A')]);
+        if (this.options.search) elements.push(searchFilterDiv);
+        return elements.concat(outerDiv).reduce(function (html, el) {
             html.appendChild(el);
             return html;
         }, dropdownFilterContent);
@@ -184,12 +173,15 @@ var FilterMenu = function () {
 }();
 
 var FilterCollection = function () {
-    function FilterCollection(target) {
-        this.filterMenus = target.find('th').toArray().map(function (th, idx) {
-            return new FilterMenu(th, idx);
+    function FilterCollection(target, options) {
+        this.options = options;
+        this.ths = target.find('th' + options.columnSelector).toArray();
+        this.filterMenus = this.ths.map(function (th, index) {
+            var column = $(th).index();
+            return new FilterMenu(th, column, index, options);
         });
         this.rows = target.find('tbody').find('tr').toArray();
-        this.target = target[0];
+        this.table = target.get(0);
     }
     FilterCollection.prototype.initialize = function () {
         this.filterMenus.forEach(function (filterMenu) {
@@ -203,90 +195,99 @@ var FilterCollection = function () {
     FilterCollection.prototype.bindCheckboxes = function () {
         var filterMenus = this.filterMenus;
         var rows = this.rows;
+        var ths = this.ths;
         var updateRowVisibility = this.updateRowVisibility;
         $('.dropdown-filter-menu-item.item').change(function () {
-            var column = $(this).data('column');
+            var index = $(this).data('index');
             var value = $(this).val();
-            filterMenus[column].toggle(value);
-            updateRowVisibility(filterMenus, rows);
+            filterMenus[index].updateSelectAll();
+            updateRowVisibility(filterMenus, rows, ths);
         });
     };
     FilterCollection.prototype.bindSelectAllCheckboxes = function () {
         var filterMenus = this.filterMenus;
         var rows = this.rows;
+        var ths = this.ths;
         var updateRowVisibility = this.updateRowVisibility;
         $('.dropdown-filter-menu-item.select-all').change(function () {
-            var column = $(this).data('column');
+            var index = $(this).data('index');
             var value = this.checked;
-            filterMenus[column].selectAllToggle(value);
-            updateRowVisibility(filterMenus, rows);
+            filterMenus[index].selectAllUpdate(value);
+            updateRowVisibility(filterMenus, rows, ths);
         });
     };
     FilterCollection.prototype.bindSort = function () {
         var filterMenus = this.filterMenus;
         var rows = this.rows;
+        var ths = this.ths;
         var sort = this.sort;
-        var table = this.target;
+        var table = this.table;
         var updateRowVisibility = this.updateRowVisibility;
         $('.dropdown-filter-sort').click(function () {
             var $sortElement = $(this).find('span');
             var column = $sortElement.data('column');
             var order = $sortElement.attr('class');
             sort(column, order, table);
-            updateRowVisibility(filterMenus, rows);
+            updateRowVisibility(filterMenus, rows, ths);
         });
     };
     FilterCollection.prototype.bindSearch = function () {
         var filterMenus = this.filterMenus;
         var rows = this.rows;
-        var sort = this.sort;
-        var table = this.target;
+        var ths = this.ths;
         var updateRowVisibility = this.updateRowVisibility;
         $('.dropdown-filter-search').keyup(function () {
             var $input = $(this).find('input');
-            var column = $input.data('column');
+            var index = $input.data('index');
             var value = $input.val();
-            filterMenus[column].searchToggle(value);
-            updateRowVisibility(filterMenus, rows);
+            filterMenus[index].searchToggle(value);
+            updateRowVisibility(filterMenus, rows, ths);
         });
     };
-    FilterCollection.prototype.updateRowVisibility = function (filterMenus, rows) {
-        rows.forEach(function (row) {
-            var $row = $(row);
-            var visible = $row.find('td').toArray().map(function (el, column) {
-                return filterMenus[column].isSelected(el.innerText);
-            }).reduce(function (prevSelected, nextSelected) {
-                return prevSelected && nextSelected;
-            }, true);
-            visible ? $row.show() : $row.hide();
+    FilterCollection.prototype.updateRowVisibility = function (filterMenus, rows, ths) {
+        var showRows = rows;
+        var hideRows = [];
+        var selectedLists = filterMenus.map(function (filterMenu) {
+            return {
+                column: filterMenu.column,
+                selected: filterMenu.inputs.filter(function (input) {
+                    return input.checked;
+                }).map(function (input) {
+                    return input.value.trim().replace(/ +(?= )/g, '');
+                })
+            };
         });
+        for (var i = 0; i < rows.length; i++) {
+            var tds = rows[i].children;
+            for (var j = 0; j < selectedLists.length; j++) {
+                var content = tds[selectedLists[j].column].textContent.trim().replace(/ +(?= )/g, '');
+                if (selectedLists[j].selected.indexOf(content) === -1) {
+                    $(rows[i]).hide();
+                    break;
+                }
+                $(rows[i]).show();
+            }
+        }
     };
     FilterCollection.prototype.sort = function (column, order, table) {
-        var rows, switching, i, x, y, shouldSwitch;
-        switching = true;
-        while (switching) {
-            switching = false;
-            rows = table.getElementsByTagName("tr");
-            for (i = 1; i < rows.length - 1; i++) {
-                shouldSwitch = false;
-                x = rows[i].getElementsByTagName("td")[column];
-                y = rows[i + 1].getElementsByTagName("td")[column];
-                if (order === 'a-to-z') {
-                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                        shouldSwitch = true;
-                        break;
-                    }
-                } else {
-                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                        shouldSwitch = true;
-                        break;
-                    }
-                }
+        var flip = 1;
+        if (order === 'z-to-a') flip = -1;
+        var tbody = $(table).find('tbody').get(0);
+        var rows = $(tbody).find('tr').get();
+        rows.sort(function (a, b) {
+            var A = a.children[column].textContent.toUpperCase();
+            var B = b.children[column].textContent.toUpperCase();
+            if (!isNaN(Number(A)) && !isNaN(Number(B))) {
+                if (Number(A) < Number(B)) return -1 * flip;
+                if (Number(A) > Number(B)) return 1 * flip;
+            } else {
+                if (A < B) return -1 * flip;
+                if (A > B) return 1 * flip;
             }
-            if (shouldSwitch) {
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                switching = true;
-            }
+            return 0;
+        });
+        for (var i = 0; i < rows.length; i++) {
+            tbody.appendChild(rows[i]);
         }
     };
     return FilterCollection;
@@ -295,7 +296,10 @@ var FilterCollection = function () {
 $$1.fn.excelTableFilter = function (options) {
     var target = this;
     options = $$1.extend({}, $$1.fn.excelTableFilter.options, options);
-    var filterCollection = new FilterCollection(target);
+    if (typeof options.columnSelector === 'undefined') options.columnSelector = '';
+    if (typeof options.sort === 'undefined') options.sort = true;
+    if (typeof options.search === 'undefined') options.search = true;
+    var filterCollection = new FilterCollection(target, options);
     filterCollection.initialize();
     return target;
 };
