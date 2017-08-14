@@ -1,10 +1,10 @@
 var FilterMenu = (function () {
-    function FilterMenu(th, column, index, options) {
+    function FilterMenu(target, th, column, index, options) {
         this.options = options;
         this.th = th;
         this.column = column;
         this.index = index;
-        this.tds = $('table tbody tr td:nth-child(' + (this.column + 1) + ')').toArray();
+        this.tds = target.find('tbody tr td:nth-child(' + (this.column + 1) + ')').toArray();
     }
     FilterMenu.prototype.initialize = function () {
         this.menu = this.dropdownFilterDropdown();

@@ -7,13 +7,15 @@ export class FilterCollection {
   ths:          Array<HTMLElement>;
   table:        HTMLElement;
   options:      Options;
+  target:       JQuery;
 
   constructor (target: JQuery, options: Options) {
+    this.target = target;
     this.options = options;
     this.ths = target.find('th' + options.columnSelector).toArray()
     this.filterMenus = this.ths.map(function(th: HTMLElement, index: number) {
       let column = $(th).index();
-      return new FilterMenu(th, column, index, options);
+      return new FilterMenu(target, th, column, index, options);
     });
     this.rows = target.find('tbody').find('tr').toArray();
     this.table = target.get(0);
@@ -34,7 +36,7 @@ export class FilterCollection {
     let rows = this.rows;
     let ths = this.ths;
     let updateRowVisibility = this.updateRowVisibility;
-    $('.dropdown-filter-menu-item.item').change(function() {
+    this.target.find('.dropdown-filter-menu-item.item').change(function() {
       let index = $(this).data('index');
       let value = $(this).val();
       filterMenus[index].updateSelectAll();
@@ -47,7 +49,7 @@ export class FilterCollection {
     let rows = this.rows;
     let ths = this.ths;
     let updateRowVisibility = this.updateRowVisibility;
-    $('.dropdown-filter-menu-item.select-all').change(function() {
+    this.target.find('.dropdown-filter-menu-item.select-all').change(function() {
       let index = $(this).data('index');
       let value = this.checked;
       filterMenus[index].selectAllUpdate(value);
@@ -62,7 +64,7 @@ export class FilterCollection {
     let sort = this.sort;
     let table = this.table;
     let updateRowVisibility = this.updateRowVisibility;
-    $('.dropdown-filter-sort').click(function() {
+    this.target.find('.dropdown-filter-sort').click(function() {
       let $sortElement = $(this).find('span');
       let column = $sortElement.data('column');
       let order = $sortElement.attr('class');
@@ -76,7 +78,7 @@ export class FilterCollection {
     let rows = this.rows;
     let ths = this.ths;
     let updateRowVisibility = this.updateRowVisibility;
-    $('.dropdown-filter-search').keyup(function() {
+    this.target.find('.dropdown-filter-search').keyup(function() {
       let $input = $(this).find('input');
       let index = $input.data('index');
       let value = $input.val();

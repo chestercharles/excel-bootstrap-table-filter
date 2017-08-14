@@ -4,12 +4,12 @@
 $$1 = 'default' in $$1 ? $$1['default'] : $$1;
 
 var FilterMenu = function () {
-    function FilterMenu(th, column, index, options) {
+    function FilterMenu(target, th, column, index, options) {
         this.options = options;
         this.th = th;
         this.column = column;
         this.index = index;
-        this.tds = $('table tbody tr td:nth-child(' + (this.column + 1) + ')').toArray();
+        this.tds = target.find('tbody tr td:nth-child(' + (this.column + 1) + ')').toArray();
     }
     FilterMenu.prototype.initialize = function () {
         this.menu = this.dropdownFilterDropdown();
@@ -174,11 +174,12 @@ var FilterMenu = function () {
 
 var FilterCollection = function () {
     function FilterCollection(target, options) {
+        this.target = target;
         this.options = options;
         this.ths = target.find('th' + options.columnSelector).toArray();
         this.filterMenus = this.ths.map(function (th, index) {
             var column = $(th).index();
-            return new FilterMenu(th, column, index, options);
+            return new FilterMenu(target, th, column, index, options);
         });
         this.rows = target.find('tbody').find('tr').toArray();
         this.table = target.get(0);
@@ -197,7 +198,7 @@ var FilterCollection = function () {
         var rows = this.rows;
         var ths = this.ths;
         var updateRowVisibility = this.updateRowVisibility;
-        $('.dropdown-filter-menu-item.item').change(function () {
+        this.target.find('.dropdown-filter-menu-item.item').change(function () {
             var index = $(this).data('index');
             var value = $(this).val();
             filterMenus[index].updateSelectAll();
@@ -209,7 +210,7 @@ var FilterCollection = function () {
         var rows = this.rows;
         var ths = this.ths;
         var updateRowVisibility = this.updateRowVisibility;
-        $('.dropdown-filter-menu-item.select-all').change(function () {
+        this.target.find('.dropdown-filter-menu-item.select-all').change(function () {
             var index = $(this).data('index');
             var value = this.checked;
             filterMenus[index].selectAllUpdate(value);
@@ -223,7 +224,7 @@ var FilterCollection = function () {
         var sort = this.sort;
         var table = this.table;
         var updateRowVisibility = this.updateRowVisibility;
-        $('.dropdown-filter-sort').click(function () {
+        this.target.find('.dropdown-filter-sort').click(function () {
             var $sortElement = $(this).find('span');
             var column = $sortElement.data('column');
             var order = $sortElement.attr('class');
@@ -236,7 +237,7 @@ var FilterCollection = function () {
         var rows = this.rows;
         var ths = this.ths;
         var updateRowVisibility = this.updateRowVisibility;
-        $('.dropdown-filter-search').keyup(function () {
+        this.target.find('.dropdown-filter-search').keyup(function () {
             var $input = $(this).find('input');
             var index = $input.data('index');
             var value = $input.val();

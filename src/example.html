@@ -22,9 +22,11 @@
       </header>
       <p class="lead"></p>
   </section>
+  <hr>
 <div class="container">
   <div class="row">
     <div class="col-md-12">
+      <h2>Table 1</h2>
       <table id="table" class="table table-bordered table-intel">
         <thead>
           <tr>
@@ -99,6 +101,129 @@
       </table>
     </div>
   </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Table 2</h2>
+      <table id="table2" class="table table-bordered table-intel">
+        <thead>
+          <tr>
+            <th class="filter">Animal</th>
+            <th class="filter">Class</th>
+            <th class="filter">Collective Noun</th>
+            <th class="filter">A Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Bear</td>
+            <td>Mammal</td>
+            <td>Sleuth</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>Ant</td>
+            <td>Insect</td>
+            <td>Army</td>
+            <td>2</td>
+          </tr>
+          <tr>
+            <td>Salamander</td>
+            <td>Amphibian</td>
+            <td>Congress</td>
+            <td>3</td>
+          </tr>
+          <tr>
+            <td>Owl</td>
+            <td>Bird</td>
+            <td>Parliament</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>Frog</td>
+            <td>Amphibian</td>
+            <td>Army</td>
+            <td>5</td>
+          </tr>
+          <tr>
+            <td>Shark</td>
+            <td>Fish</td>
+            <td>Gam</td>
+            <td>6</td>
+          </tr>
+          <tr>
+            <td>Kookaburra</td>
+            <td>Bird</td>
+            <td>Cackle</td>
+            <td>7</td>
+          </tr>
+          <tr>
+            <td>Crow</td>
+            <td>Bird</td>
+            <td>Murder</td>
+            <td>8</td>
+          </tr>
+          <tr>
+            <td>Elephant</td>
+            <td>Mammal</td>
+            <td>Herd</td>
+            <td>9</td>
+          </tr>
+          <tr>
+            <td>Barracude</td>
+            <td>Fish</td>
+            <td>Grist</td>
+            <td>10</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Table 3</h2>
+      <table id="table3" class="table table-bordered table-intel">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Contact</th>
+            <th>Country</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Alfreds Futterkiste</td>
+            <td>Maria Anders</td>
+            <td>Germany</td>
+          </tr>
+          <tr>
+            <td>Centro comercial Moctezuma</td>
+            <td>Francisco Chang</td>
+            <td>Mexico</td>
+          </tr>
+          <tr>
+            <td>Ernst Handel</td>
+            <td>Roland Mendel</td>
+            <td>Austria</td>
+          </tr>
+          <tr>
+            <td>Island Trading</td>
+            <td>Helen Bennett</td>
+            <td>UK</td>
+          </tr>
+          <tr>
+            <td>Laughing Bacchus Winecellars</td>
+            <td>Yoshi Tannamuri</td>
+            <td>Canada</td>
+          </tr>
+          <tr>
+            <td>Magazzini Alimentari Riuniti</td>
+            <td>Giovanni Rovelli</td>
+            <td>Italy</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
   
 
@@ -107,6 +232,8 @@
     $(function () {
       // Apply the plugin 
       $('#table').excelTableFilter();
+      $('#table2').excelTableFilter();
+      $('#table3').excelTableFilter();
     });
   </script>
 </body>

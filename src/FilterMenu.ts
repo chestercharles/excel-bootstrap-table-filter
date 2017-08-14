@@ -9,13 +9,14 @@ export class FilterMenu {
   selectAllCheckbox:  Element;
   searchFilter:       Element;
   options:            Options;
+  target:             JQuery;
 
-  constructor (th: HTMLElement, column: number, index: number, options: Options) {
+  constructor (target: JQuery, th: HTMLElement, column: number, index: number, options: Options) {
     this.options = options;
     this.th = th;
     this.column = column;
     this.index = index;
-    this.tds = $('table tbody tr td:nth-child(' + (this.column + 1) + ')').toArray();
+    this.tds = target.find('tbody tr td:nth-child(' + (this.column + 1) + ')').toArray();
   }
 
   public initialize(): void {
