@@ -1,3 +1,9 @@
 .vscode/
 coverage/
 node_modules/
+!dist/excel-bootstrap-table-filter-style.css
+!dist/excel-bootstrap-table-filter-bundle.js
+!dist/excel-bootstrap-table-filter-bundle.js.map
+!dist/excel-bootstrap-table-filter-bundle.min.js
+!dist/excel-bootstrap-table-filter-bundle.min.js.map
+dist/**
