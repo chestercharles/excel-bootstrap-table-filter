@@ -1,4 +1,4 @@
-= jQuery Excel Bootstrap Table Filter jQuery Plugin
+= Excel Bootstrap Table Filter jQuery Plugin
 
 A jQuery plugin to generate an excel-flavored table-filter.
 
