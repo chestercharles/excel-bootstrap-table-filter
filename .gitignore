@@ -6,4 +6,5 @@ node_modules/
 !dist/excel-bootstrap-table-filter-bundle.js.map
 !dist/excel-bootstrap-table-filter-bundle.min.js
 !dist/excel-bootstrap-table-filter-bundle.min.js.map
+!dist/example.html
 dist/**
