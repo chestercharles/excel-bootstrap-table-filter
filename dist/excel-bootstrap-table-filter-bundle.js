@@ -261,7 +261,7 @@ var FilterCollection = function () {
         for (var i = 0; i < rows.length; i++) {
             var tds = rows[i].children;
             for (var j = 0; j < selectedLists.length; j++) {
-                var content = tds[selectedLists[j].column].textContent.trim().replace(/ +(?= )/g, '');
+                var content = tds[selectedLists[j].column].innerText.trim().replace(/ +(?= )/g, '');
                 if (selectedLists[j].selected.indexOf(content) === -1) {
                     $(rows[i]).hide();
                     break;
@@ -276,8 +276,8 @@ var FilterCollection = function () {
         var tbody = $(table).find('tbody').get(0);
         var rows = $(tbody).find('tr').get();
         rows.sort(function (a, b) {
-            var A = a.children[column].textContent.toUpperCase();
-            var B = b.children[column].textContent.toUpperCase();
+            var A = a.children[column].innerText.toUpperCase();
+            var B = b.children[column].innerText.toUpperCase();
             if (!isNaN(Number(A)) && !isNaN(Number(B))) {
                 if (Number(A) < Number(B)) return -1 * flip;
                 if (Number(A) > Number(B)) return 1 * flip;

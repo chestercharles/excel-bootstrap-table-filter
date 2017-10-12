@@ -104,7 +104,7 @@ export class FilterCollection {
     for (let i=0; i < rows.length; i++) {
       let tds = rows[i].children;
       for (let j=0; j < selectedLists.length; j++) {
-        let content = tds[selectedLists[j].column].textContent.trim().replace(/ +(?= )/g,'')
+        let content = (tds[selectedLists[j].column] as HTMLElement).innerText.trim().replace(/ +(?= )/g,'')
         if (selectedLists[j].selected.indexOf(content) === -1 ) {
           $(rows[i]).hide();
           break;
@@ -121,8 +121,8 @@ export class FilterCollection {
     let rows = $(tbody).find('tr').get();
 
     rows.sort(function(a, b) {
-      var A = a.children[column].textContent.toUpperCase(); 
-      var B = b.children[column].textContent.toUpperCase();
+      var A = (a.children[column] as HTMLElement).innerText.toUpperCase(); 
+      var B = (b.children[column] as HTMLElement).innerText.toUpperCase();
 
       if (!isNaN(Number(A)) && !isNaN(Number(B))) {
         // handle numbers
