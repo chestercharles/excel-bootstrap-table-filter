@@ -56,7 +56,7 @@ export class FilterCollection {
       updateRowVisibility(filterMenus, rows, ths);
     });
   }
-  
+
   private bindSort(): void {
     let filterMenus = this.filterMenus;
     let rows = this.rows;
@@ -116,12 +116,12 @@ export class FilterCollection {
 
   private sort(column: number, order: string, table: HTMLElement): void {
     let flip = 1;
-    if (order === 'z-to-a') flip = -1;
+    if (order === this.options.captions.z_to_a.toLowerCase().split(' ').join('-')) flip = -1;
     let tbody = $(table).find('tbody').get(0);
     let rows = $(tbody).find('tr').get();
 
     rows.sort(function(a, b) {
-      var A = (a.children[column] as HTMLElement).innerText.toUpperCase(); 
+      var A = (a.children[column] as HTMLElement).innerText.toUpperCase();
       var B = (b.children[column] as HTMLElement).innerText.toUpperCase();
 
       if (!isNaN(Number(A)) && !isNaN(Number(B))) {

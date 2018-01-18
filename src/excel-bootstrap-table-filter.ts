@@ -10,7 +10,14 @@ import { FilterCollection } from './FilterCollection'
   if (typeof options.columnSelector === 'undefined') options.columnSelector = '';
   if (typeof options.sort === 'undefined') options.sort = true;
   if (typeof options.search === 'undefined') options.search = true;
-  
+
+  if (typeof options.captions === 'undefined') options.captions = {
+    a_to_z: 'A to Z',
+    z_to_a: 'Z to A',
+    search: 'Search',
+    select_all: 'Select All'
+  }
+
   let filterCollection = new FilterCollection(target, options);
   filterCollection.initialize();
 
