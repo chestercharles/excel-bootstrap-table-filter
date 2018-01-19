@@ -63,12 +63,13 @@ export class FilterCollection {
     let ths = this.ths;
     let sort = this.sort;
     let table = this.table;
+    let options = this.options;
     let updateRowVisibility = this.updateRowVisibility;
     this.target.find('.dropdown-filter-sort').click(function() {
       let $sortElement = $(this).find('span');
       let column = $sortElement.data('column');
       let order = $sortElement.attr('class');
-      sort(column, order, table);
+      sort(column, order, table, options);
       updateRowVisibility(filterMenus, rows, ths);
     });
   }
@@ -114,9 +115,9 @@ export class FilterCollection {
     }
   }
 
-  private sort(column: number, order: string, table: HTMLElement): void {
+  private sort(column: number, order: string, table: HTMLElement, options: Options): void {
     let flip = 1;
-    if (order === this.options.captions.z_to_a.toLowerCase().split(' ').join('-')) flip = -1;
+    if (order === options.captions.z_to_a.toLowerCase().split(' ').join('-')) flip = -1;
     let tbody = $(table).find('tbody').get(0);
     let rows = $(tbody).find('tr').get();
 

@@ -232,12 +232,13 @@ var FilterCollection = function () {
         var ths = this.ths;
         var sort = this.sort;
         var table = this.table;
+        var options = this.options;
         var updateRowVisibility = this.updateRowVisibility;
         this.target.find('.dropdown-filter-sort').click(function () {
             var $sortElement = $(this).find('span');
             var column = $sortElement.data('column');
             var order = $sortElement.attr('class');
-            sort(column, order, table);
+            sort(column, order, table, options);
             updateRowVisibility(filterMenus, rows, ths);
         });
     };
@@ -279,9 +280,9 @@ var FilterCollection = function () {
             }
         }
     };
-    FilterCollection.prototype.sort = function (column, order, table) {
+    FilterCollection.prototype.sort = function (column, order, table, options) {
         var flip = 1;
-        if (order === this.options.captions.z_to_a.toLowerCase().split(' ').join('-')) flip = -1;
+        if (order === options.captions.z_to_a.toLowerCase().split(' ').join('-')) flip = -1;
         var tbody = $(table).find('tbody').get(0);
         var rows = $(tbody).find('tr').get();
         rows.sort(function (a, b) {
