@@ -56,19 +56,20 @@ export class FilterCollection {
       updateRowVisibility(filterMenus, rows, ths);
     });
   }
-  
+
   private bindSort(): void {
     let filterMenus = this.filterMenus;
     let rows = this.rows;
     let ths = this.ths;
     let sort = this.sort;
     let table = this.table;
+    let options = this.options;
     let updateRowVisibility = this.updateRowVisibility;
     this.target.find('.dropdown-filter-sort').click(function() {
       let $sortElement = $(this).find('span');
       let column = $sortElement.data('column');
       let order = $sortElement.attr('class');
-      sort(column, order, table);
+      sort(column, order, table, options);
       updateRowVisibility(filterMenus, rows, ths);
     });
   }
@@ -114,14 +115,14 @@ export class FilterCollection {
     }
   }
 
-  private sort(column: number, order: string, table: HTMLElement): void {
+  private sort(column: number, order: string, table: HTMLElement, options: Options): void {
     let flip = 1;
-    if (order === 'z-to-a') flip = -1;
+    if (order === options.captions.z_to_a.toLowerCase().split(' ').join('-')) flip = -1;
     let tbody = $(table).find('tbody').get(0);
     let rows = $(tbody).find('tr').get();
 
     rows.sort(function(a, b) {
-      var A = (a.children[column] as HTMLElement).innerText.toUpperCase(); 
+      var A = (a.children[column] as HTMLElement).innerText.toUpperCase();
       var B = (b.children[column] as HTMLElement).innerText.toUpperCase();
 
       if (!isNaN(Number(A)) && !isNaN(Number(B))) {

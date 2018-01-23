@@ -35,7 +35,7 @@ export class FilterMenu {
       // hide the content if the user clicks outside of the menu
       if (!$menu.is(el.target) && $menu.has(el.target).length === 0) {
         $content.hide();
-      } 
+      }
     });
   }
 
@@ -81,7 +81,7 @@ export class FilterMenu {
       if (input instanceof HTMLInputElement) input.checked = checked;
     }
   }
-  
+
   private dropdownFilterItem(td: HTMLElement, self: any): HTMLElement {
     // build holder div
     let value = td.innerText;
@@ -104,13 +104,13 @@ export class FilterMenu {
 
   private dropdownFilterItemSelectAll(): HTMLElement {
     // build holder div
-    let value = 'Select All';
+    let value = this.options.captions.select_all;
     let dropdownFilterItemSelectAll = document.createElement('div');
     dropdownFilterItemSelectAll.className = 'dropdown-filter-item';
     // build input
     let input = document.createElement('input');
     input.type = 'checkbox';
-    input.value = 'Select All';
+    input.value = this.options.captions.select_all;
     input.setAttribute('checked','checked');
     input.className = 'dropdown-filter-menu-item select-all';
     input.setAttribute('data-column', this.column.toString());
@@ -120,7 +120,7 @@ export class FilterMenu {
     dropdownFilterItemSelectAll.innerHTML = dropdownFilterItemSelectAll.innerHTML + ' ' +  value;
     return dropdownFilterItemSelectAll;
   }
-  
+
   private dropdownFilterSearch(): HTMLElement {
     // build holder div
     let dropdownFilterItem = document.createElement('div');
@@ -131,7 +131,7 @@ export class FilterMenu {
     input.className = 'dropdown-filter-menu-search form-control';
     input.setAttribute('data-column', this.column.toString());
     input.setAttribute('data-index', this.index.toString());
-    input.setAttribute('placeholder', 'search');
+    input.setAttribute('placeholder', this.options.captions.search);
     // append input to holding div
     dropdownFilterItem.appendChild(input);
     return dropdownFilterItem;
@@ -212,7 +212,10 @@ export class FilterMenu {
     outerDiv.className = 'checkbox-container';
 
     let elements: Array<HTMLElement> = [];
-    if (this.options.sort  ) elements= elements.concat([ this.dropdownFilterSort( 'A to Z'),  this.dropdownFilterSort( 'Z to A')]);
+    if (this.options.sort  ) elements= elements.concat([
+      this.dropdownFilterSort(this.options.captions.a_to_z),
+      this.dropdownFilterSort(this.options.captions.z_to_a)
+      ]);
     if (this.options.search) elements.push(searchFilterDiv);
 
     return elements.concat(outerDiv).reduce(function(html, el) {
@@ -232,6 +235,16 @@ export class FilterMenu {
     arrow.appendChild(icon);
     dropdownFilterDropdown.appendChild(arrow);
     dropdownFilterDropdown.appendChild(this.dropdownFilterContent());
+
+    if ($(this.th).hasClass('no-sort')) {
+      $(dropdownFilterDropdown).find('.dropdown-filter-sort').remove();
+    }
+    if ($(this.th).hasClass('no-filter')) {
+      $(dropdownFilterDropdown).find('.checkbox-container').remove();
+    }
+    if ($(this.th).hasClass('no-search')) {
+      $(dropdownFilterDropdown).find('.dropdown-filter-search').remove();
+    }
     return dropdownFilterDropdown;
   }
 

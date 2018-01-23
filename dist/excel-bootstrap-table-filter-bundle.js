@@ -74,12 +74,12 @@ var FilterMenu = function () {
         return dropdownFilterItem;
     };
     FilterMenu.prototype.dropdownFilterItemSelectAll = function () {
-        var value = 'Select All';
+        var value = this.options.captions.select_all;
         var dropdownFilterItemSelectAll = document.createElement('div');
         dropdownFilterItemSelectAll.className = 'dropdown-filter-item';
         var input = document.createElement('input');
         input.type = 'checkbox';
-        input.value = 'Select All';
+        input.value = this.options.captions.select_all;
         input.setAttribute('checked', 'checked');
         input.className = 'dropdown-filter-menu-item select-all';
         input.setAttribute('data-column', this.column.toString());
@@ -96,7 +96,7 @@ var FilterMenu = function () {
         input.className = 'dropdown-filter-menu-search form-control';
         input.setAttribute('data-column', this.column.toString());
         input.setAttribute('data-index', this.index.toString());
-        input.setAttribute('placeholder', 'search');
+        input.setAttribute('placeholder', this.options.captions.search);
         dropdownFilterItem.appendChild(input);
         return dropdownFilterItem;
     };
@@ -150,7 +150,7 @@ var FilterMenu = function () {
         }, document.createElement('div'));
         outerDiv.className = 'checkbox-container';
         var elements = [];
-        if (this.options.sort) elements = elements.concat([this.dropdownFilterSort('A to Z'), this.dropdownFilterSort('Z to A')]);
+        if (this.options.sort) elements = elements.concat([this.dropdownFilterSort(this.options.captions.a_to_z), this.dropdownFilterSort(this.options.captions.z_to_a)]);
         if (this.options.search) elements.push(searchFilterDiv);
         return elements.concat(outerDiv).reduce(function (html, el) {
             html.appendChild(el);
@@ -167,6 +167,15 @@ var FilterMenu = function () {
         arrow.appendChild(icon);
         dropdownFilterDropdown.appendChild(arrow);
         dropdownFilterDropdown.appendChild(this.dropdownFilterContent());
+        if ($(this.th).hasClass('no-sort')) {
+            $(dropdownFilterDropdown).find('.dropdown-filter-sort').remove();
+        }
+        if ($(this.th).hasClass('no-filter')) {
+            $(dropdownFilterDropdown).find('.checkbox-container').remove();
+        }
+        if ($(this.th).hasClass('no-search')) {
+            $(dropdownFilterDropdown).find('.dropdown-filter-search').remove();
+        }
         return dropdownFilterDropdown;
     };
     return FilterMenu;
@@ -223,12 +232,13 @@ var FilterCollection = function () {
         var ths = this.ths;
         var sort = this.sort;
         var table = this.table;
+        var options = this.options;
         var updateRowVisibility = this.updateRowVisibility;
         this.target.find('.dropdown-filter-sort').click(function () {
             var $sortElement = $(this).find('span');
             var column = $sortElement.data('column');
             var order = $sortElement.attr('class');
-            sort(column, order, table);
+            sort(column, order, table, options);
             updateRowVisibility(filterMenus, rows, ths);
         });
     };
@@ -270,9 +280,9 @@ var FilterCollection = function () {
             }
         }
     };
-    FilterCollection.prototype.sort = function (column, order, table) {
+    FilterCollection.prototype.sort = function (column, order, table, options) {
         var flip = 1;
-        if (order === 'z-to-a') flip = -1;
+        if (order === options.captions.z_to_a.toLowerCase().split(' ').join('-')) flip = -1;
         var tbody = $(table).find('tbody').get(0);
         var rows = $(tbody).find('tr').get();
         rows.sort(function (a, b) {
@@ -300,6 +310,12 @@ $$1.fn.excelTableFilter = function (options) {
     if (typeof options.columnSelector === 'undefined') options.columnSelector = '';
     if (typeof options.sort === 'undefined') options.sort = true;
     if (typeof options.search === 'undefined') options.search = true;
+    if (typeof options.captions === 'undefined') options.captions = {
+        a_to_z: 'A to Z',
+        z_to_a: 'Z to A',
+        search: 'Search',
+        select_all: 'Select All'
+    };
     var filterCollection = new FilterCollection(target, options);
     filterCollection.initialize();
     return target;
