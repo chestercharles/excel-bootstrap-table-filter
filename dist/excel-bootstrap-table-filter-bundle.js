@@ -316,6 +316,11 @@ $$1.fn.excelTableFilter = function (options) {
         search: 'Search',
         select_all: 'Select All'
     };
+    if (typeof options.reload !== 'undefined'){
+			$(this).find('th').each(function(key,val){
+				$(this).html($(this).find('span:first').text());
+			});
+		}
     var filterCollection = new FilterCollection(target, options);
     filterCollection.initialize();
     return target;
