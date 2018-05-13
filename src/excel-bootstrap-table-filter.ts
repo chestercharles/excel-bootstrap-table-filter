@@ -17,6 +17,12 @@ import { FilterCollection } from './FilterCollection'
     search: 'Search',
     select_all: 'Select All'
   }
+  
+  if (typeof options.reload !== 'undefined'){
+    $(this).find('th').each(function(key,val){
+      $(this).html($(this).find('span:first').text());
+    });
+  }
 
   let filterCollection = new FilterCollection(target, options);
   filterCollection.initialize();
