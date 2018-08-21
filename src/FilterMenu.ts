@@ -29,7 +29,11 @@ export class FilterMenu {
     let $menu = $(this.menu);
 
     // toggle hide/show when the trigger is clicked
-    $trigger.click(() => $content.toggle());
+    $trigger.click(function () {
+        $content.toggle();
+        $menu.find("input[type=text]").focus();
+        return;
+    });
 
     $(document).click(function(el) {
       // hide the content if the user clicks outside of the menu
