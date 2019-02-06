@@ -242,10 +242,13 @@ var FilterCollection = function () {
         var table = this.table;
         var options = this.options;
         var updateRowVisibility = this.updateRowVisibility;
-        this.target.find('.dropdown-filter-sort').click(function () {
+        this.target.find('.dropdown-filter-sort').click(function (e) {
+						var idx = $(this).context.children["0"].dataset.index;
             var $sortElement = $(this).find('span');
             var column = $sortElement.data('column');
             var order = $sortElement.attr('class');
+						var mazda = filterMenus[idx].th.children[0].children[0];
+						mazda.style.backgroundColor = "#33b500";
             sort(column, order, table, options);
             updateRowVisibility(filterMenus, rows, ths);
         });
