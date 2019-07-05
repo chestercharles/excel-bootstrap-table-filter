@@ -105,7 +105,7 @@ export class FilterCollection {
     for (let i=0; i < rows.length; i++) {
       let tds = rows[i].children;
       for (let j=0; j < selectedLists.length; j++) {
-        let content = (tds[selectedLists[j].column] as HTMLElement).innerText.trim().replace(/ +(?= )/g,'')
+        let content = (tds[selectedLists[j].column] as HTMLElement).innerHTML.trim().replace(/ +(?= )/g,'')
         if (selectedLists[j].selected.indexOf(content) === -1 ) {
           $(rows[i]).hide();
           break;
