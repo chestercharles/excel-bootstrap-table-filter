@@ -84,7 +84,7 @@ export class FilterMenu {
 
   private dropdownFilterItem(td: HTMLElement, self: any): HTMLElement {
     // build holder div
-    let value = td.innerText;
+    let value = td.innerHTML
     let dropdownFilterItem = document.createElement('div');
     dropdownFilterItem.className = 'dropdown-filter-item';
     // build input
@@ -160,8 +160,8 @@ export class FilterMenu {
 
     let innerDivs = this.tds.reduce(function(arr, el) {
       // get unique values in column
-      let values = arr.map((el) => el.innerText.trim());
-      if (values.indexOf(el.innerText.trim()) < 0) arr.push(el);
+      let values = arr.map((el) => el.innerHTML.trim());
+      if (values.indexOf(el.innerHTML.trim()) < 0) arr.push(el);
       // return unique values
       return arr;
     }, [])
