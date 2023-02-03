@@ -280,6 +280,38 @@ var FilterCollection = function () {
             }
         }
     };
+  		//begin replace 
+		/*
+        for (var i = 0; i < rows.length; i++) {
+            var tds = rows[i].children;
+            for (var j = 0; j < selectedLists.length; j++) {
+                var content = tds[selectedLists[j].column].innerText.trim().replace(/ +(?= )/g, '');
+                if (selectedLists[j].selected.indexOf(content) === -1) {
+                    $(rows[i]).hide();
+                    break;
+                }
+                $(rows[i]).show();
+            }
+        }
+		//end replace
+		*/
+		//begin new code as proposed from Emory Belcher
+		$(rows).filter(function () {
+			var showRow = false;
+		
+			var tds = this.children;
+			for (var j = 0; j < selectedLists.length;
+				j++) {
+				var content = $(tds[selectedLists[j].column]).text().trim().replace(/ +(?= )/g, '');
+				if	(selectedLists[j].selected.indexOf(content) == -1) {
+					showRow = false;
+					break;
+				}
+				showRow = true;
+			}
+			$(this).toggle(showRow);
+		})
+		//end new code
     FilterCollection.prototype.sort = function (column, order, table, options) {
         var flip = 1;
         if (order === options.captions.z_to_a.toLowerCase().split(' ').join('-')) flip = -1;
